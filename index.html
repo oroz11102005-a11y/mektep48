@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>№48 М.Нурбаев атындагы ЖББММ — Онлайн Тест</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Жогорку панель -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <div class="brand" onclick="showView('student-home')">
+        <img src="logo.jpg" alt="Мектеп логотиби" class="nav-logo">
+        <div>
+          <h1>№48 М.Нурбаев атындагы</h1>
+          <p>жалпы билим берүү мектеп мекемеси</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button id="btn-student-view" class="btn btn-outline active" onclick="showView('student-home')">Окуучу</button>
+        <button id="btn-teacher-view" class="btn btn-primary" onclick="openTeacherArea()">Мугалимдер кабинети</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    
+    <!-- 1. ОКУУЧУНУН БАШКЫ БЕТИ -->
+    <section id="view-student-home" class="card">
+      <div class="hero-header">
+        <img src="logo.jpg" alt="Логотип" class="hero-logo">
+        <h2>Онлайн Тестирлөө Системасы</h2>
+        <p class="subtitle">Маалыматыңызды толтуруп, предметти тандаңыз</p>
+      </div>
+
+      <form id="start-test-form" class="form-grid">
+        <div class="form-group">
+          <label for="student-name">Окуучунун аты-жөнү (Толук):</label>
+          <input type="text" id="student-name" placeholder="Мисалы: Асанов Улан" required>
+        </div>
+
+        <div class="form-group">
+          <label for="student-class">Классы:</label>
+          <select id="student-class" required>
+            <option value="">Классты тандаңыз...</option>
+            <option value="5-класс">5-класс</option>
+            <option value="6-класс">6-класс</option>
+            <option value="7-класс">7-класс</option>
+            <option value="8-класс">8-класс</option>
+            <option value="9-класс">9-класс</option>
+            <option value="10-класс">10-класс</option>
+            <option value="11-класс">11-класс</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="student-subject">Предмет:</label>
+          <select id="student-subject" required>
+            <option value="">Жүктөлүүдө...</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block">Тестти баштоо</button>
+      </form>
+    </section>
+
+    <!-- 2. ТЕСТ ТАПШЫРУУ БЕТИ -->
+    <section id="view-quiz" class="card hidden">
+      <div class="quiz-header">
+        <div>
+          <span id="quiz-subject-badge" class="badge">Предмет</span>
+          <h3 id="quiz-student-info">Окуучу | Класс</h3>
+        </div>
+        <div id="quiz-progress" class="progress-text">Суроо: 1 / 10</div>
+      </div>
+
+      <div id="quiz-questions-container"></div>
+
+      <div class="quiz-footer">
+        <button id="btn-submit-quiz" class="btn btn-primary btn-block" onclick="submitQuiz()">Тестти аяктоо жана жөнөтүү</button>
+      </div>
+    </section>
+
+    <!-- 3. ЖЫЙЫНТЫК БЕТИ -->
+    <section id="view-result" class="card hidden text-center">
+      <h2>Тест аяктады!</h2>
+      <div class="score-circle">
+        <span id="result-percent">0%</span>
+      </div>
+      <p id="result-details" class="result-text"></p>
+      <p class="saved-notice">✅ Жыйынтыгыңыз мектептин онлайн базасына сакталды.</p>
+      <div id="result-review" class="review-box"></div>
+      <button class="btn btn-primary" onclick="showView('student-home')">Башкы бетке кайтуу</button>
+    </section>
+
+    <!-- 4. МУГАЛИМДИН КИРҮҮ (ЛОГИН) БЕТИ -->
+    <section id="view-teacher-login" class="card hidden small-card">
+      <h2>Мугалимдер кабинетине кирүү</h2>
+      <p class="subtitle">Өзүңүздүн логин жана паролуңузду жазыңыз</p>
+      <form id="teacher-login-form" class="form-grid">
+        <div class="form-group">
+          <label for="teacher-login">Логин:</label>
+          <input type="text" id="teacher-login" placeholder="Мисалы: math_teacher" required>
+        </div>
+        <div class="form-group">
+          <label for="teacher-password">Пароль:</label>
+          <input type="password" id="teacher-password" placeholder="••••••••" required>
+        </div>
+        <p id="login-error" class="error-text hidden">Логин же пароль туура эмес!</p>
+        <button type="submit" class="btn btn-primary btn-block">Кирүү</button>
+      </form>
+    </section>
+
+    <!-- 5. МУГАЛИМДИН БАШКАРУУ ПАНЕЛИ -->
+    <section id="view-teacher-dashboard" class="card hidden">
+      <div class="dashboard-header">
+        <div>
+          <h2 id="teacher-welcome">Саламатсызбы, Мугалим!</h2>
+          <p id="teacher-subject-label" class="subtitle">Предмет: Бардыгы</p>
+        </div>
+        <button class="btn btn-danger" onclick="logoutTeacher()">Чыгуу</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('results', this)">Окуучулардын жыйынтыгы</button>
+        <button class="tab-btn" onclick="switchTab('questions', this)">Суроо кошуу / Башкаруу</button>
+      </div>
+
+      <!-- ТАБ 1: ЖЫЙЫНТЫКТАР -->
+      <div id="tab-results" class="tab-content">
+        <div class="filter-bar">
+          <select id="filter-class" onchange="renderResultsTable()">
+            <option value="all">Бардык класстар</option>
+            <option value="5-класс">5-класс</option>
+            <option value="6-класс">6-класс</option>
+            <option value="7-класс">7-класс</option>
+            <option value="8-класс">8-класс</option>
+            <option value="9-класс">9-класс</option>
+            <option value="10-класс">10-класс</option>
+            <option value="11-класс">11-класс</option>
+          </select>
+          <select id="filter-subject" onchange="renderResultsTable()">
+            <option value="all">Бардык предметтер</option>
+          </select>
+          <button class="btn btn-success" onclick="exportToCSV()">📥 Excel (CSV) жүктөө</button>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Аты-жөнү</th>
+                <th>Классы</th>
+                <th>Предмет</th>
+                <th>Упай</th>
+                <th>Пайыз</th>
+                <th>Убактысы</th>
+              </tr>
+            </thead>
+            <tbody id="results-table-body">
+              <tr><td colspan="7">Маалыматтар жүктөлүүдө...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ТАБ 2: СУРОО КОШУУ -->
+      <div id="tab-questions" class="tab-content hidden">
+        <form id="add-question-form" class="form-grid box-light">
+          <h3>Жаңы суроо кошуу</h3>
+          <div class="form-group">
+            <label>Предметтин аталышы:</label>
+            <input type="text" id="q-subject" placeholder="Мисалы: Информатика" required>
+          </div>
+          <div class="form-group">
+            <label>Суроонун тексти:</label>
+            <textarea id="q-text" rows="2" placeholder="Суроону жазыңыз..." required></textarea>
+          </div>
+          <div class="options-grid">
+            <input type="text" id="q-opt0" placeholder="А) Вариант 1" required>
+            <input type="text" id="q-opt1" placeholder="Б) Вариант 2" required>
+            <input type="text" id="q-opt2" placeholder="В) Вариант 3" required>
+            <input type="text" id="q-opt3" placeholder="Г) Вариант 4" required>
+          </div>
+          <div class="form-group">
+            <label>Туура жооп кайсы?</label>
+            <select id="q-correct">
+              <option value="0">А) Вариант 1</option>
+              <option value="1">Б) Вариант 2</option>
+              <option value="2">В) Вариант 3</option>
+              <option value="3">Г) Вариант 4</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">+ Базага кошуу</button>
+        </form>
+
+        <h3 style="margin-top: 24px;">Базадагы суроолор (<span id="total-q-count">0</span>)</h3>
+        <div id="admin-questions-list" class="questions-list"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 №48 М.Нурбаев атындагы жалпы билим берүү мектеп мекемеси</p>
+  </footer>
+
+  <!-- Firebase SDK (Онлайн база үчүн) -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
